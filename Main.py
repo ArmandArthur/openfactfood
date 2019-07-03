@@ -42,42 +42,50 @@ class Main:
 
             # Save a categorie
             cursor = self.database.cursor()
-            sql = "INSERT INTO categories (name) VALUES (%s) "
-            cursor.execute(sql, (i,) ) # sans la virgule, il y a un bug.
-            self.database.commit()
-            categorie_id = cursor.lastrowid
-
-            #Save a brand
-            for j, product in enumerate(categorie['products']):
+            sql = "SELECT * FROM categories WHERE name = '"+i+"' "
+            rs_categorie = cursor.execute(sql)
+            rows = cursor.fetchall()
+            if not rows:
                 cursor = self.database.cursor()
-                brand_label = product['brands']
-                sql = "SELECT * FROM marques WHERE name = '"+brand_label+"' "
-                rs = cursor.execute(sql)
-                rows = cursor.fetchall()
-                if not rows:
+                sql = "INSERT INTO categories (name) VALUES (%s) "
+                cursor.execute(sql, (i,) ) # sans la virgule, il y a un bug.
+                self.database.commit()
+                categorie_id = cursor.lastrowid
+            else:  
+                categorie_id = rows[0][0]
+
+            if categorie_id != '':
+                #Save a brand
+                for j, product in enumerate(categorie['products']):
                     cursor = self.database.cursor()
-                    sql = "INSERT INTO marques (name) VALUES (%s) "
-                    cursor.execute(sql, (brand_label,) ) # sans la virgule, il y a un bug.
+                    brand_label = product['brands']
+                    sql = "SELECT * FROM marques WHERE name = '"+brand_label+"' "
+                    rs = cursor.execute(sql)
+                    rows = cursor.fetchall()
+                    if not rows:
+                        cursor = self.database.cursor()
+                        sql = "INSERT INTO marques (name) VALUES (%s) "
+                        cursor.execute(sql, (brand_label,) ) # sans la virgule, il y a un bug.
+                        self.database.commit()
+                        brand_id = cursor.lastrowid
+                    else:  
+                        brand_id = rows[0][0]
+                                
+                    #Save the product
+                    cursor = self.database.cursor()
+                    sql = "INSERT INTO produits (name, marque_id, nutriscore, url) VALUES (%s,%s,%s,%s)"
+                    product_name = product['product_name']
+                    product_nutriscore = product['nutrition_grades_tags'][0]
+                    product_url = product['url']
+                    cursor.execute(sql, (product_name, brand_id, product_nutriscore, product_url,) ) # sans la virgule, il y a un bug.
                     self.database.commit()
-                    brand_id = cursor.lastrowid
-                else:  
-                    brand_id = rows[0][0]
-                            
-                #Save the product
-                cursor = self.database.cursor()
-                sql = "INSERT INTO produits (name, marque_id, nutriscore, url) VALUES (%s,%s,%s,%s)"
-                product_name = product['product_name']
-                product_nutriscore = product['nutrition_grades_tags'][0]
-                product_url = product['url']
-                cursor.execute(sql, (product_name, brand_id, product_nutriscore, product_url,) ) # sans la virgule, il y a un bug.
-                self.database.commit()
-                product_id = cursor.lastrowid
+                    product_id = cursor.lastrowid
 
-                #Save the association after insert product and categorie
-                cursor = self.database.cursor()
-                sql = "INSERT INTO asso_produit_categorie (categorie_id, produit_id) VALUES (%s,%s)"
-                cursor.execute(sql, (categorie_id, product_id,) )
-                self.database.commit()
+                    #Save the association after insert product and categorie
+                    cursor = self.database.cursor()
+                    sql = "INSERT INTO asso_produit_categorie (categorie_id, produit_id) VALUES (%s,%s)"
+                    cursor.execute(sql, (categorie_id, product_id,) )
+                    self.database.commit()
 
 
     def database_create(self):
