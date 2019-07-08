@@ -11,8 +11,8 @@ class Setup:
 
     def __init__(self):
         self.connection = Database.getInstance().connection
-        self.database_create()
-        self.database = Database.getInstance().database
+        #self.database_create()
+        self.database = Database.updateInstance().database
         self.database_build()
         self.database_set_values()
 
@@ -39,8 +39,8 @@ class Setup:
                 cursor.execute(sql, (i,) ) # sans la virgule, il y a un bug.
                 self.database.commit()
                 categorie_id = cursor.lastrowid
-            else:  
-                categorie_id = rows[0][0]
+            #else:  
+                #categorie_id = rows[0][0]
 
             if categorie_id != '':
                 #Save a brand
@@ -87,10 +87,10 @@ class Setup:
         cursor = self.database.cursor()
 
         f_open = open('database_structure.sql', 'r')
-        sql_file = f_open.Database()
+        sql_file = f_open.read()
         f_open.close()
 
-        sql_commandes = sql_file.plit(';')
+        sql_commandes = sql_file.split(';')
 
         for command in sql_commandes:
             try:

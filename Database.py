@@ -21,19 +21,22 @@ class Database:
         if Database.__instance == None:
             Database()
         return Database.__instance
+    
+    @staticmethod
+    def updateInstance():
+        Database.__instance.database = mysql.connector.connect(
+            host=Database.database_host,
+            user=Database.database_user,
+            passwd=Database.database_passwd,
+            database=Database.database_name           
+        )
+        return Database.__instance
 
     def __init__(self):
         self.connection = mysql.connector.connect(
             host=self.database_host,
             user=self.database_user,
             passwd=self.database_passwd,        
-        )
-        
-        self.database = mysql.connector.connect(
-            host=self.database_host,
-            user=self.database_user,
-            passwd=self.database_passwd,
-            database=self.database_name           
         )
 
         if Database.__instance != None:
