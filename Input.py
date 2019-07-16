@@ -79,8 +79,6 @@ class Input:
         # avec cette requete là, si on rentre 18, ça trouve un produit qui a une 
         # catégorie différente, ce qui est pas bon
         #sql = "SELECT * FROM produits WHERE id = '{}' ".format(choice_produit)
-    def produit_exist(self, choice_produit, choice_categorie):
-        cursor = self.database.cursor()
         sql = "SELECT * FROM produits INNER JOIN asso_produit_categorie ON produits.id = asso_produit_categorie.produit_id  WHERE produits.id = '{}' AND asso_produit_categorie.categorie_id = '{}' ".format(choice_produit, choice_categorie )
         cursor.execute(sql)
         rows = cursor.fetchall()
