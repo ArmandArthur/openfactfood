@@ -87,5 +87,68 @@ class Input:
             self.produit_menu(choice_categorie)
         else:
             # Si une produit est trouvé, on affiche le menu du substitu
-            print("else")
-           
+            self.produit_substitu_search(choice_produit)
+
+    def produit_substitu_search(self, choice_produit):
+        produit_item = self.produit_search(choice_produit)   
+        nutriscore_better = self.letter_before(produit_item.nutriscore)
+        produit_substitu = self.substitu_search(choice_produit, nutriscore_better)
+        if produit_substitu is not None:
+            self.produit_substitu_input(produit_item, produit_substitu)
+        else:
+            print("Aucun produit subsitu de trouver...")
+
+    def produit_substitu_input(self, produit_item, produit_substitu):
+        choice_save = input("Voulez vous enregistrer en base de données le substitu? (oui/non) ")
+        if choice_save == 'oui':
+            isInsert = self.produit_substitu_save(produit_item, produit_substitu)
+            if isInsert == True :
+                print("Favoris enregistré")
+            self.display_menu()
+            
+        else: 
+            self.display_menu()
+
+    def produit_substitu_save(self, produit_item, produit_substitu):
+        cursor = self.database.cursor()
+        sql = "INSERT INTO favoris (produit_id, produit_substitu_id) VALUES (%s,%s)"
+        product_id = produit_item['id']
+        print(product_id)
+        product_substitu_id = produit_substitu.id        
+        cursor.execute(sql, (product_id, product_substitu_id,) ) # sans la virgule, il y a un bug.
+        self.database.commit() 
+        if cursor.rowcount is not None:
+            return True
+        else:
+            return False
+
+    def produit_search(self, choice_produit):
+        cursor = self.database.cursor(named_tuple=True)
+        sql = "SELECT produits.* FROM produits WHERE produits.id =  '{}' ".format(choice_produit)
+        cursor.execute(sql)
+        produit = cursor.fetchall()
+        return produit[0]
+
+    def substitu_search(self, choice_produit, nutriscore_better):
+        # Recherche de la catégorie du produit
+        cursor = self.database.cursor(named_tuple=True)
+        sql = "SELECT categories.* FROM categories INNER JOIN asso_produit_categorie ON categories.id = asso_produit_categorie.categorie_id INNER JOIN produits ON  produits.id = asso_produit_categorie.produit_id  WHERE produits.id =  '{}' ".format(choice_produit)
+        cursor.execute(sql)
+        categorie = cursor.fetchone()
+
+        # Recherche d'un substitu
+        cursor = self.database.cursor(named_tuple=True)
+        sql = "SELECT produits.* FROM produits INNER JOIN asso_produit_categorie ON asso_produit_categorie.produit_id = produits.id INNER JOIN categories ON categories.id = asso_produit_categorie.categorie_id WHERE categories.id =  '{}' AND produits.nutriscore = '{}' ".format(categorie.id, nutriscore_better)
+        cursor.execute(sql)
+        produit_substitu = cursor.fetchone()
+        return produit_substitu
+
+    def letter_before(self, nutriscore):
+        alphabetic = "abcdefghijklmnopqrstuvwxyz"
+        position = alphabetic.find(nutriscore)
+        if position > -1:
+            nutriscore_better = alphabetic[position-1]        
+        else:
+            nutriscore_better = alphabetic[0]
+        return nutriscore_better
+        
