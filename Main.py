@@ -3,12 +3,13 @@
 
 from Database import Database
 from Setup import Setup
-#sfrom Input import Input
+from Input import Input
 
 
 class Main:
 
     def __init__(self):
         Setup()
+        Input()
 
 Main()

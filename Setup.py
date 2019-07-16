@@ -11,11 +11,24 @@ class Setup:
 
     def __init__(self):
         self.connection = Database.getInstance().connection
-        #self.database_create()
-        self.database = Database.updateInstance().database
-        self.database_build()
-        self.database_set_values()
+        database_exist = self.database_exist()
+        if database_exist == False :
+            self.database_create()
+            self.database = Database.updateInstance().database
+            self.database_build()
+            self.database_set_values()  
 
+
+    def database_exist(self):
+        cursor = self.connection.cursor()
+
+        cursor.execute(
+            "SELECT  schema_name FROM information_schema.schemata WHERE schema_name = 'openfoodfacts'")
+        rows = cursor.fetchall()
+        if not rows:
+            return False
+        else:
+            return True
 
     def database_set_values(self):
         self.url_yaourt_caramel = self.url+"/categorie/yaourts-au-caramel.json"
