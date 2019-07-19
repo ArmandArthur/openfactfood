@@ -10,8 +10,8 @@ class Database:
     # Connexion BDD
     database_host = "127.0.0.1"
     database_user = "root"
-    #database_passwd = "arthur"
-    database_passwd = "rootAdmin!!"
+    database_passwd = "arthur"
+    #database_passwd = "rootAdmin!!"
     database_name = "openfoodfacts" 
     database_file = "database_structure.sql"
 

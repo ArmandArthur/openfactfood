@@ -69,6 +69,10 @@ class Input:
         for produit in produits:
             print ("{} -- {} -- {} ".format(produit.id, produit.name, produit.nutriscore))
 
+    def produit_item_print(self, produit):
+            print ("Un substitu de trouver: ")
+            print ("{} -- {} -- {} ".format(produit.id, produit.name, produit.nutriscore))
+
     def produit_input(self, choice_categorie):
         choice_produit = input("Selectionner l'id d'un produit : ")
         choice_produit = int(choice_produit)
@@ -94,9 +98,20 @@ class Input:
         nutriscore_better = self.letter_before(produit_item.nutriscore)
         produit_substitu = self.substitu_search(choice_produit, nutriscore_better)
         if produit_substitu is not None:
+            self.produit_item_print(produit_substitu)
             self.produit_substitu_input(produit_item, produit_substitu)
         else:
-            print("Aucun produit subsitu de trouver...")
+            print("Aucun produit substitu de trouver...")
+            # Recherche de la catégorie du produit pour lancer le menu des produits
+            categorie = self.categorie_find(choice_produit)
+            self.produit_menu(categorie.id)
+
+    def categorie_find(self, choice_produit):
+        cursor = self.database.cursor(named_tuple=True, buffered=True)
+        sql = "SELECT categories.* FROM categories INNER JOIN asso_produit_categorie ON categories.id = asso_produit_categorie.categorie_id INNER JOIN produits ON  produits.id = asso_produit_categorie.produit_id  WHERE produits.id =  '{}' ".format(choice_produit)
+        cursor.execute(sql)
+        categorie = cursor.fetchone()
+        return categorie
 
     def produit_substitu_input(self, produit_item, produit_substitu):
         choice_save = input("Voulez vous enregistrer en base de données le substitu? (oui/non) ")
@@ -112,8 +127,7 @@ class Input:
     def produit_substitu_save(self, produit_item, produit_substitu):
         cursor = self.database.cursor()
         sql = "INSERT INTO favoris (produit_id, produit_substitu_id) VALUES (%s,%s)"
-        product_id = produit_item['id']
-        print(product_id)
+        product_id = produit_item.id
         product_substitu_id = produit_substitu.id        
         cursor.execute(sql, (product_id, product_substitu_id,) ) # sans la virgule, il y a un bug.
         self.database.commit() 
@@ -126,18 +140,15 @@ class Input:
         cursor = self.database.cursor(named_tuple=True)
         sql = "SELECT produits.* FROM produits WHERE produits.id =  '{}' ".format(choice_produit)
         cursor.execute(sql)
-        produit = cursor.fetchall()
-        return produit[0]
+        produit = cursor.fetchone()
+        return produit
 
     def substitu_search(self, choice_produit, nutriscore_better):
         # Recherche de la catégorie du produit
-        cursor = self.database.cursor(named_tuple=True)
-        sql = "SELECT categories.* FROM categories INNER JOIN asso_produit_categorie ON categories.id = asso_produit_categorie.categorie_id INNER JOIN produits ON  produits.id = asso_produit_categorie.produit_id  WHERE produits.id =  '{}' ".format(choice_produit)
-        cursor.execute(sql)
-        categorie = cursor.fetchone()
+        categorie = self.categorie_find(choice_produit)
 
         # Recherche d'un substitu
-        cursor = self.database.cursor(named_tuple=True)
+        cursor = self.database.cursor(named_tuple=True, buffered=True)
         sql = "SELECT produits.* FROM produits INNER JOIN asso_produit_categorie ON asso_produit_categorie.produit_id = produits.id INNER JOIN categories ON categories.id = asso_produit_categorie.categorie_id WHERE categories.id =  '{}' AND produits.nutriscore = '{}' ".format(categorie.id, nutriscore_better)
         cursor.execute(sql)
         produit_substitu = cursor.fetchone()
