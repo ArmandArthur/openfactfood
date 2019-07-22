@@ -80,7 +80,7 @@ class Input:
 
     def produit_print(self, produits):
         for produit in produits:
-            print (Color.WARNING + "{} -- {} -- {} ".format(produit.id, produit.name, produit.nutriscore) + Color.ENDC)
+            print (Color.WARNING + "{:<3} -- {:<70} -- {:<2} ".format(produit.id, produit.name, produit.nutriscore) + Color.ENDC)
         print("\n")
 
     def produit_item_print(self, produit):
