@@ -10,8 +10,8 @@ class Database:
     # Connexion BDD
     database_host = "127.0.0.1"
     database_user = "root"
-    #sdatabase_passwd = "arthur"
-    database_passwd = "rootAdmin!!"
+    database_passwd = "arthur"
+    #database_passwd = "rootAdmin!!"
     database_name = "openfoodfacts" 
     database_file = "database_structure.sql"
 
@@ -24,6 +24,9 @@ class Database:
     
     @staticmethod
     def updateInstance():
+        """ Necessaire pour lancer le singleton """
+        if Database.__instance == None:
+            Database()
         Database.__instance.database = mysql.connector.connect(
             host=Database.database_host,
             user=Database.database_user,
