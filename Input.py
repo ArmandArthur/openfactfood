@@ -31,7 +31,7 @@ class Input:
             self.categorie_menu()
         # Retrouver mes substitus
         elif choice_menu == 2 :
-            print('ko')
+            self.substitu_menu()
 
     def categorie_menu(self):
         # pour avoir les attributs au lieu des tuples
@@ -115,10 +115,11 @@ class Input:
             self.produit_item_print(produit_substitu)
             self.produit_substitu_input(produit_item, produit_substitu)
         else:
+            print("\n")
             print("Aucun produit substitu de trouver...")
             # Recherche de la catégorie du produit pour lancer le menu des produits
-            categorie = self.category_find(choice_produit)
-            self.produit_menu(categorie.id)
+            parameters = self.category_find(choice_produit)
+            self.produit_menu(parameters['categorie'].id)
 
     """ GET the category from product_id  """
     def category_find(self, choice_produit):
@@ -204,3 +205,32 @@ class Input:
 
         return liste_literal
         
+    def substitu_menu(self):
+        parameters = self.requestSubstituInstance.liste()
+        print("\n")
+        print(Color.OKGREEN + "Le programme a retourné {} produits qui ont un subsititu ".format(parameters['cursor'].rowcount)+ Color.ENDC)
+        print("\n")
+        self.produit_print(parameters['products'])
+        self.substitu_input()
+
+    def substitu_input(self):
+        choice_product = input(Color.HEADER + "Selectionner l'id d'un produit : "+ Color.ENDC)
+        try:
+            choice_product = int(choice_product)
+            isExist = self.substitu_exist(choice_product)
+            if isExist == True:
+                self.substitu_item(choice_product)
+            else:
+                self.substitu_menu()
+        except ValueError:
+            self.substitu_menu()   
+
+    def substitu_exist(self, choice_product):
+        parameters = self.requestProductInstance.find(choice_product)
+        isExist = self.requestSubstituInstance.exist(parameters['produit'])
+        return isExist
+
+    def substitu_item(self, choice_product):
+        parameters = self.requestSubstituInstance.item_from_product(choice_product)
+        self.produit_item_print(parameters['product'])
+        self.display_menu()
