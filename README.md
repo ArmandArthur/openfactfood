@@ -1,5 +1,5 @@
-# openfoodfacts
-# Programme - Echange avec une base de données - PYTHON
+# Programme Openfactfood - Echange avec une base de données - PYTHON
+
 
 Installer les modules et dépendances avec les commandes suivantes :
 - pip install requests
