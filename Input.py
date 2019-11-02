@@ -6,6 +6,7 @@ from Color import Color
 from RequestCategory import RequestCategory
 from RequestProduct import RequestProduct
 from RequestSubstitu import RequestSubstitu
+from colorama import init
 
 class Input:
 
@@ -14,6 +15,7 @@ class Input:
         [EN] - GET request model
     """
     def __init__(self):
+        init()
         self.requestCategoryInstance = RequestCategory()
         self.requestProductInstance = RequestProduct()
         self.requestSubstituInstance = RequestSubstitu()
@@ -28,7 +30,8 @@ class Input:
         print(Color.WARNING + " 1 - Quel aliment souhaitez-vous remplacer ? " + Color.ENDC)
         print(Color.WARNING + " 2 - Retrouver mes aliments substitues " + Color.ENDC)
         print("\n")
-        choice_menu = input(Color.HEADER + "Faites votre choix : " + Color.ENDC)
+        print(Color.HEADER)
+        choice_menu = input("Faites votre choix")
         try:
             choice_menu = int(choice_menu)
         except ValueError:
@@ -77,7 +80,8 @@ class Input:
         [EN] - Else, display list of product with the choice_categorie
     """
     def categorie_input(self):
-        choice_categorie = input(Color.HEADER + "Selectionner l'id d'une categorie : "+ Color.ENDC)
+        print(Color.HEADER)
+        choice_categorie = input("Selectionner l'id d'une categorie : ")
         try:
             choice_categorie = int(choice_categorie)
             self.categorie_exist(choice_categorie)
@@ -138,7 +142,8 @@ class Input:
         [EN] - Chooce of ID's product, verify si product exist
     """
     def produit_input(self, choice_categorie):
-        choice_produit = input(Color.HEADER + "Selectionner l'id d'un produit : " + Color.ENDC)
+        print(Color.HEADER)
+        choice_produit = input("Selectionner l'id d'un produit : ")
         try:
             choice_produit = int(choice_produit)
             self.produit_exist(choice_produit, choice_categorie)        
@@ -215,7 +220,8 @@ class Input:
     """
 
     def produit_substitu_input(self, produit_item, produit_substitu):
-        choice_save = input(Color.HEADER + "Voulez vous enregistrer en base de données le substitu? (oui/non) " + Color.ENDC)
+        print(Color.HEADER)
+        choice_save = input("Voulez vous enregistrer en base de données le substitu? (oui/non) ")
         if choice_save == 'oui':
             isInsert = self.produit_substitu_save(produit_item, produit_substitu)
             if isInsert == True :
@@ -344,7 +350,8 @@ class Input:
         
     """    
     def substitu_input(self):
-        choice_product = input(Color.HEADER + "Selectionner l'id d'un produit : "+ Color.ENDC)
+        print(Color.HEADER)
+        choice_product = input("Selectionner l'id d'un produit : ")
         try:
             choice_product = int(choice_product)
             isExist = self.substitu_exist(choice_product)
