@@ -12,4 +12,4 @@ Vous devez saisir correctement vos paramètres de connexion pour que le programm
 Le fichier "setup.py" et plus précisément la méthode "database_set_values" contient les URLS qui seront ajoutées à la BDD 
 lors de l'éxécution du fichier "Main.py".
 
-Pour lancer le programme, effectuer un "py Main.Py"
+Pour lancer le programme, effectuer un "py Main.py"
