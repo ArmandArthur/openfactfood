@@ -341,7 +341,11 @@ class Input:
         print(Color.OKGREEN + "Le programme a retourné {} produits qui ont un subsititu ".format(parameters['cursor'].rowcount)+ Color.ENDC)
         print("\n")
         self.produit_print(parameters['products'])
-        self.substitu_input()
+        if( parameters['cursor'].rowcount == 0):
+            self.display_menu()
+        else:
+            self.substitu_input()
+        
 
     """ 
         Choix du produit sur lequel on veut avoir le substitut
