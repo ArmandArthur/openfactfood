@@ -1,11 +1,5 @@
 
 
-CREATE TABLE marques (
-                id INT NOT NULL AUTO_INCREMENT,
-                name VARCHAR(255) NOT NULL,
-                PRIMARY KEY (id)
-);
-
 
 CREATE TABLE categories (
                 id INT NOT NULL AUTO_INCREMENT,
@@ -38,11 +32,6 @@ CREATE TABLE asso_produit_categorie (
 );
 
 
-ALTER TABLE produits ADD CONSTRAINT marques_produits_fk
-FOREIGN KEY (marque_id)
-REFERENCES marques (id)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION;
 
 ALTER TABLE asso_produit_categorie ADD CONSTRAINT categories_asso_produit_categorie_fk
 FOREIGN KEY (categorie_id)
